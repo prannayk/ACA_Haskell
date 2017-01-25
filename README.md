@@ -1,5 +1,8 @@
 # ACA Haskell
-ACA Project Haskell
+ACA Project Haskell -- Sudhanshu Jaiswal
+
+26 Jan :Successfully forked by Sudhanshu.Trying out other tasks in process.
+
 
 Members:
 
@@ -17,3 +20,4 @@ Members:
 5. Haskell stack setup with latest version of GHC
 6. Basic Git : fork, branch, minor change, remote host update, pull request
 7. Basic text editing using vim/emacs (Optional)
+
