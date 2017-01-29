@@ -6,6 +6,8 @@ ACA Project Haskell -- Sudhanshu Jaiswal
 
 27 Jan : Vim installed, zsh installed, Haskell Stack installed and set-up.
 
+29 Jan : Trying basic file manipulation.
+
 Members:
 
 * Ankit Kumar Singh
