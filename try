@@ -1,1 +1,4 @@
-making a new file in my brach and sending pull request to the master branch....yesss
+git remote add Ahsan https://github.com/ahsanbarkati/ACA_Haskell.git
+git push serversbrnchname loclbrnchname
+git pull <remote> <local>
+git push <remote <local>
