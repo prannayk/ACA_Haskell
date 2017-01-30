@@ -1,4 +1,4 @@
 git remote add Ahsan https://github.com/ahsanbarkati/ACA_Haskell.git
 git push serversbrnchname loclbrnchname
-git pull <remote> <local>
+git pull  <local> <remote>
 git push <remote <local>
