@@ -7,7 +7,7 @@ Members:
 * Sudhanshu Jaiswal
 * Ahsan 
 * Abhishek
-* Siddhant Kar
+* Siddhant
 
 ## Initial Tasks
 1. Command line navigation: mkdir, cd, rm, printenv, man
