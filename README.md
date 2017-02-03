@@ -17,3 +17,8 @@ Members:
 5. Haskell stack setup with latest version of GHC
 6. Basic Git : fork, branch, minor change, remote host update, pull request
 7. Basic text editing using vim/emacs (Optional)
+
+## Second Week Tasks
+*  Chapter 4 : LYAH
+*  Stack setup
+*  grep with Regex
