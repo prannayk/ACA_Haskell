@@ -1,0 +1,97 @@
+#include<stdio.h>
+int arr[3][3];
+int options[9];
+int choice;
+int x[9];
+int y[9];
+int pass=1;
+void initialize()
+{
+    int i,j;
+    for(i=0;i<3;i++)
+    {
+        for(j=0;j<3;j++)
+        {
+            arr[i][j]=0;
+        }
+    }
+}
+
+
+void printing()
+{
+    int i,j;
+    for(i=0;i<3;i++)
+    {
+        for(j=0;j<3;j++)
+        {    if(arr[i][j]==1)
+            printf("  0  ");
+ 		else if(arr[i][j]==2)
+		printf("  X  ");
+		else
+		printf("     ");
+        }
+	printf("\n\n");
+    }
+}
+
+
+void displayoptions()
+{
+    int c=1,i,j;
+    for(i=0;i<3;i++)
+    {
+        for(j=0;j<3;j++)
+        {
+            if((arr[i][j]!=1)&&(arr[i][j]!=2))
+		{
+        	    printf("%d.(%d,%d)\n",c,i+1,j+1);
+		    x[c-1]=i;
+		    y[c-1]=j;
+                    options[c-1]=c++;
+		}
+        }
+    }
+    printf("Enter Your Choice ");
+    scanf("%d",&choice);
+pass++;
+    
+}
+
+
+int update()
+{
+if(pass%2==0)
+arr[x[choice-1]][y[choice-1]]=1;
+else
+arr[x[choice-1]][y[choice-1]]=2;
+}
+
+
+int main()
+{
+
+printf("   *-*-*-*-*-*-*- O has First turn *-*-*-*-*-*-*-*\n");
+
+int i=0;
+    initialize();
+    printing();
+while(i<10)
+{
+    displayoptions();
+update();
+printing();
+
+i++;
+}
+}
+
+
+
+
+
+
+
+
+
+
