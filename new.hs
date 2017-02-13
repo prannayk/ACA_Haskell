@@ -10,3 +10,5 @@ evens :: [Integer] -> [[Char]]
 evens s = [if x < 10 then "Small even" else "Big even" | x <- s,  not (odd x)]
 
 
+onlyUpper :: [Char] -> [Char]
+onlyUpper st = [x|x <- st,x `elem` ['A'..'Z']]
