@@ -5,3 +5,7 @@ ACA Project Haskell -- Sudhanshu Jaiswal
 27 Jan : Vim installed, zsh installed, Haskell Stack installed and set-up.
 
 8 Feb : Created this and started basic programs with Haskell
+
+13 Feb : Added some haskell functions I tried, Installed i3 window manager, now using vim for majority of my editing.
+
+
