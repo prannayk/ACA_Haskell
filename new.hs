@@ -9,6 +9,7 @@ b = take 10 [5,8..305]
 evens :: [Integer] -> [[Char]] 
 evens s = [if x < 10 then "Small even" else "Big even" | x <- s,  not (odd x)]
 
+sumsp =  sum(takeWhile(<1000)[x|x<-[1..],x `mod` 3 == 0 || x `mod` 5 ==0])
 
 onlyUpper :: [Char] -> [Char]
 onlyUpper st = [x|x <- st,x `elem` ['A'..'Z']]
@@ -24,3 +25,7 @@ hoursYouReadBooks hours books
   | ratio <= 3 = "Oh you are a devotee"
   | otherwise = "Get OUT! Like Seriously!"
   where ratio = (fromIntegral (hours) / fromIntegral(books))
+
+
+
+
