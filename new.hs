@@ -17,11 +17,10 @@ doYouGAF :: [[Char]] -> [[Char]]
 doYouGAF st = [if (x == "No" || x== "no") then "No Fs given" else "But why" | x <-  st, x == head st]
 
  
-HoursYouReadBooks :: (Integral a) => a -> a -> String
-
-HoursYouReadBooks hours books
+hoursYouReadBooks :: (Integral a) => a -> a -> String
+hoursYouReadBooks hours books
   | ratio <= 1 = "C'mmon give those books some time"
   | ratio <= 2 = "That's quite good!"
   | ratio <= 3 = "Oh you are a devotee"
   | otherwise = "Get OUT! Like Seriously!"
-  where ratio = (fromIntegral (hours) / books)
+  where ratio = (fromIntegral (hours) / fromIntegral(books))
