@@ -8,8 +8,20 @@ b = take 10 [5,8..305]
 
 evens :: [Integer] -> [[Char]] 
 evens s = [if x < 10 then "Small even" else "Big even" | x <- s,  not (odd x)]
+--folds by recursion
+foldl' :: (b -> a -> b) -> b -> [a] -> b
+foldl' f acc [] = acc
+foldl' f acc (x:xs) = foldl' f (f acc x) xs
+
+foldr' :: (a -> b -> b) -> b -> [a] -> b
+foldr' f acc [] = acc
+foldr' f acc (x:xs) = f x (foldr' f acc xs)
 
 sumsp =  sum(takeWhile(<1000)[x|x<-[1..],x `mod` 3 == 0 || x `mod` 5 ==0])
+
+sumsp' = sum(takeWhile(<1000)(filter p [1..]))  -- using filter
+  where p x = (x `mod` 3 == 0 || x `mod` 5 == 0)
+
 
 onlyUpper :: [Char] -> [Char]
 onlyUpper st = [x|x <- st,x `elem` ['A'..'Z']]
