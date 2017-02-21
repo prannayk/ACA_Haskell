@@ -17,6 +17,20 @@ foldr' :: (a -> b -> b) -> b -> [a] -> b
 foldr' f acc [] = acc
 foldr' f acc (x:xs) = f x (foldr' f acc xs)
 
+--take and frop by recursion
+take' :: Integer -> [b] -> [b]
+take' n [] = []
+take' n (x:xs)
+    | n <= 0 = []
+    | n >= 0 = (x:(take' (n-1) xs))
+
+drop' :: Integer -> [b] -> [b]
+drop' n [] = []
+drop' n (x:xs)
+    | n <= 0 = xs
+    | n >= 0 = (drop' (n-1) xs)    
+
+--sum of all numbers less than 1000 which are divisible by 3 or 5
 sumsp =  sum(takeWhile(<1000)[x|x<-[1..],x `mod` 3 == 0 || x `mod` 5 ==0])
 
 sumsp' = sum(takeWhile(<1000)(filter p [1..]))  -- using filter
