@@ -1,3 +1,5 @@
+import Data.List (sort)
+
 doubleMe x = x+x
 doubletwo x y = doubleMe x + doubleMe y + 9
 doubleBig x = if x > 100 then x*2 else x
@@ -29,6 +31,39 @@ drop' n [] = []
 drop' n (x:xs)
     | n <= 0 = xs
     | n >= 0 = (drop' (n-1) xs)    
+
+--sinx with error bounds
+fact' :: Float -> Float
+fact' 1 = 1
+fact' n  = n * fact' (n-1)
+
+sin' :: Float -> Float
+sin' x = sum(take 3 [(term 0),(term 1)..])
+  where term n = ((x ** ((2*n)+1)) * ((-1) ** n)) / (fact'((2*n)+1)) 
+        errorsin x = abs(sin x - sin' x)
+
+--sin' :: Float -> Float -> Float
+--sin' x y = sum(takeWhile ((errorsin x) < (y)) [(term 0),(term 1)..])
+--  where term n = ((x ** ((2*n)+1)) * ((-1) ** n)) / (fact'((2*n)+1)) 
+--        errorsin x = abs(sin x - sin' x)
+
+term n x = ((x ** ((2*n)+1)) * ((-1) ** n)) / (fact'((2*n)+1))    
+errorsin x = abs(sin x - sin' x)
+
+--merge lists
+mergels :: [a] -> [a] -> [a]
+mergels xs [] = xs
+mergels [] ys = ys
+mergels (x:xs) (y:ys) = (x : (y : (mergels xs ys)))
+
+
+--merge lists and sort 
+mergelst :: (Ord) => [a] -> [a] -> [a]
+mergelst xs [] = xs
+mergelst [] ys = ys
+mergelst (x:xs) (y:ys) = (a : (b : (mergelst as bs)))
+                      where a:as = sort (xs)
+                            b:bs = sort (ys)
 
 --sum of all numbers less than 1000 which are divisible by 3 or 5
 sumsp =  sum(takeWhile(<1000)[x|x<-[1..],x `mod` 3 == 0 || x `mod` 5 ==0])
