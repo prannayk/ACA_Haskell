@@ -1,0 +1,27 @@
+fac 0 = 1
+fac n = n * fac (n-1)
+pow x 0 = 1
+pow x n = x*(pow x (n-1))
+computer e n x cursum = do
+    let an=(pow x (2*n-1))
+    let bn=(fac (2*n-1))
+    let cn=(pow (-1) (n+1))
+    let tn=cn*an/bn
+    if(e<abs tn)
+         then do
+              print tn
+              computer e (n+1) x (cursum+tn)
+    else print (cursum+tn)
+   
+ 
+    
+
+
+main = do
+    print "Enter value of x in radians"
+    str1<-getLine
+    print "Enter maximum error value"
+    str2<-getLine
+    let x=read str1::Double
+    let e=read str2::Double
+    computer e 1 x 0
