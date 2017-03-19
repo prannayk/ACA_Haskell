@@ -1,0 +1,28 @@
+PROJECT : HASKELL CRYPTO
+Name : Siddhant Kar
+Roll number : 160680
+Branch : CSE
+
+PROBLEM : Design an n x n tic tac toe game in haskell for two players (not AI).
+........................................................................................................
+
+The game is designed for running in ghci.
+Load the file in ghci with " :l TicTacToe.hs ".
+
+To start the game, create a variable to store the matrix " let var1 = start n ".
+This makes var1 a two dimensional array of characters, with the default character set to '.'.
+n is the order of the matrix.
+
+To make a move, i.e., to put an x (or o), use a new variable " let var2 = x 5 6 var ".
+var2 is now the new matrix with an x put in coordinates (5,6).
+
+For the next move, use " let var1 = o 4 3 var2 ".
+var1 thus gets updated and the game can go on.
+
+To display the matrix at any time, use " d var1 "
+where var1 is the current state of the game.
+
+TIME : 
+The overall time taken is obviously proportional to the number of steps.
+The time to make the first matrix is directly proportional to n, the order.
+The time taken in the further steps, also, increases with the order.
