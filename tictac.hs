@@ -42,7 +42,7 @@ wins nums p g = any checkr (rows ++ cols ++ dias)--true if any return true
               dias = [findDiag nums g, findDiag nums (map reverse g)]
 
 findDiag :: Int -> Playgrid -> [Player]
-findDiag nums g = [g !! n !! n | n <- [0..nums-1]]
+findDiag nums g = [g !! n !! n | n <- [0..nums-1]]--puts diagonal elements into a list
 
 -- !!Plan to add gridlines to the Playgrid output, thus two seperate row and player str of strings!! 
 --functions to print the grid 
@@ -53,14 +53,15 @@ putPlaygrid = mapM_ (putStrLn . intercalate " " . map show)
 isValid :: Int -> Playgrid -> Int -> Bool
 isValid nums g i = (i >= 0) && (i < (nums^2)) && (concat g !! i == B)
 
-move:: Int -> Playgrid -> Int -> Player -> [Playgrid]
-move nums g i p =
+move:: Int -> Playgrid -> Int -> Player -> [Playgrid]--changes the ith element of the playgrid (concatonated).
+--Splits concatoated playgrid into parts before and after the ith element then merge those parts adding the player letter in between.
+move nums g i p =  -- nums is grid size, g is playgrid, i is move number entered and p is player (X or O)
    if isValid nums g i then [cutt nums (xs ++ [p] ++ ys)] else []
-   where (xs,B:ys) = splitAt i (concat g)--splitAt splits list at i
+   where (xs,B:ys) = splitAt i (concat g)--splitAt splits list at i and makes a list containing those two split parts
 
 cutt :: Int -> [a] -> [[a]]--creates sublists of size n from original lists
 cutt n [] = []
-cutt n xs = take n xs : cutt n (drop n xs)
+cutt n xs = take n xs : cutt n (drop n xs)--takes n makes a list then takes n from the remainder and puts all those lists into a list
 
 --main function to take in grid size and runs gameloop
 main :: IO ()
