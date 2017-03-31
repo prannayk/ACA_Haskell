@@ -1,0 +1,111 @@
+import Data.List
+sum' row =foldl (\acc x -> acc+x) 0 (filter (/=8) row)
+
+diag1list state 0 n =[state!!0!!0]
+diag1list state i n = [state!!i!!i] ++ diag1list state (i-1) n
+diag2list state 0 n = [state!!0!!(n-1)]
+diag2list state i n = [state !!i!!(n-1-i)] ++ diag2list state (i-1) n
+
+windiag l n=do
+    let s=sum' l
+    if(s==2*n) then do 
+	print "X has won"
+	return ()
+        else do
+            if(s==3*n) then do 
+		print "0 has won"
+		return ()
+                else
+                    return ()
+
+checkwin state n i=do
+    if(i<n) then do
+        let l1=diag1list state (n-1) n
+        let l2=diag2list state (n-1) n
+        winrow state n i
+        wincol state n i
+        windiag l1 n
+        windiag l2 n
+        checkwin state n (i+1)
+        else return ()
+
+winrow state n i=do
+        let s= sum' (state!!i)
+        if(s==2*n) then do 
+	    print "X has Won"
+	    return ()
+            else do
+                if( s==3*n) then do
+		    print "0 has won"
+		    return ()
+                    else
+                       return()
+
+wincol state n i =do
+    let m = transpose state
+    let s=sum' (m!!i)
+    if(s==2*n) then do
+		print "X has won"
+		return ()
+        else do
+            if(s==3*n) then do
+		print "0 has won"
+		return ()
+                else
+                    return()
+
+
+
+
+game state i j c n= do
+    if(state!!i!!j==8) then do
+    
+        let row=state !! i
+        let p1=take j row
+        let p2= drop (j+1) row
+        let nrow=p1++[2+c `mod` 2]++p2
+        let py1=take i state
+        let py2=drop (i+1) state
+        let f=py1++[nrow]++py2
+        printgame f 0 0 n
+        checkwin f n 0
+        input f n (c+1)
+        else
+            input state n c
+        
+
+
+input state n c= do
+    str2<-getLine
+    let i=read str2::Int
+    str3<-getLine
+    let j=read str3::Int
+    game state i j (c `mod` 2) n
+
+                      
+printgame state i j n =do
+    if(i<n&&j<n-1)then do
+        if(state!!i!!j==8) then putStr("__ ")
+            else do
+                if(state!!i!!j==2) then putStr(" X ")
+                    else putStr(" 0 ")
+        printgame state i (j+1) n
+        else do
+            if(j==n-1&&i<n)then do
+                if(state!!i!!j==8) then putStr("__ ")
+                    else do
+                        if(state!!i!!j==2) then putStr(" X ")
+                            else putStr(" 0 ")
+                putStrLn("")
+                putStrLn("")
+                printgame state (i+1) 0 n
+                else
+                return ()   
+
+main = do
+    print "please enter dimension of the Grid"
+    str<-getLine
+    let n = read str::Int
+    let state = (replicate n) ((replicate n) 8)
+    printgame state 0 0 n
+    input state n 0
