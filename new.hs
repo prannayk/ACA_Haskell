@@ -58,12 +58,12 @@ mergels (x:xs) (y:ys) = (x : (y : (mergels xs ys)))
 
 
 --merge lists and sort 
-mergelst :: (Ord) => [a] -> [a] -> [a]
-mergelst xs [] = xs
-mergelst [] ys = ys
-mergelst (x:xs) (y:ys) = (a : (b : (mergelst as bs)))
-                      where a:as = sort (xs)
-                            b:bs = sort (ys)
+--mergelst :: (Ord) => [a] -> [a] -> [a]
+--mergelst xs [] = xs
+--mergelst [] ys = ys
+--mergelst (x:xs) (y:ys) = (a : (b : (mergelst as bs)))
+--                      where a:as = sort (xs)
+--                            b:bs = sort (ys)
 
 --sum of all numbers less than 1000 which are divisible by 3 or 5
 sumsp =  sum(takeWhile(<1000)[x|x<-[1..],x `mod` 3 == 0 || x `mod` 5 ==0])
