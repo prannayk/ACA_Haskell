@@ -87,3 +87,16 @@ gameloop' sizes g p
 prompts' :: Player -> String
 prompts' p = "Player " ++ show p ++ ", enter your move: "
 
+data Tree a = Node a [Tree a]
+              deriving Show
+
+possiblemoves :: Int -> Playgrid -> Player -> [Playgrid]
+possiblemoves nums g p = 
+             | wins nums p g = []
+             | full g = []
+             | otherwise = concat [move nums g i p | i <- [0 .. ((size^2)-1)]]
+-- move gives a single playgrid inside a list so to take that playgrid out of the list we need to concat 
+
+gametree :: Playgrid -> Player -> Tree Playgrid
+gametree g p = Node g [ gametree g' (changeturn p) | g' <- possiblemoves nums g p]           
+
