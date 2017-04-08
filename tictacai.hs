@@ -91,12 +91,17 @@ data Tree a = Node a [Tree a]
               deriving Show
 
 possiblemoves :: Int -> Playgrid -> Player -> [Playgrid]
-possiblemoves nums g p = 
-             | wins nums p g = []
-             | full g = []
-             | otherwise = concat [move nums g i p | i <- [0 .. ((size^2)-1)]]
+possiblemoves size g p
+              | wins size p g = []
+              | full g = []
+              | otherwise = concat [move size g i p | i <- [0 .. ((size^2)-1)]]
 -- move gives a single playgrid inside a list so to take that playgrid out of the list we need to concat 
 
-gametree :: Playgrid -> Player -> Tree Playgrid
-gametree g p = Node g [ gametree g' (changeturn p) | g' <- possiblemoves nums g p]           
+gametree :: Int -> Playgrid -> Player -> Tree Playgrid
+gametree size g p = Node g [ gametree size g' (changeturn p) | g' <- possiblemoves size g p]           
 
+scorerow :: [Player] -> (Int,Int,Int)
+scorerow row = foldl (\(score,countx,counto) player -> if (player == X ) then (score + (10^(countx+1)),countx+1,0) else if (player == O) then (score - 10^(counto+1),0,counto+1) else (score,0,0)) (0,0,0) (row)
+
+findrow :: Int->  Int -> Int
+findrow size x = x `div` size 
