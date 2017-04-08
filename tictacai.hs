@@ -79,7 +79,7 @@ gameloop' sizes g p
          | full g    = putStrLn "GAME DRAW!\n"
          | otherwise =
               do num <- getNum (prompts' p)
-                 case move sizes g num p of
+                 case move sizes g num p of--generates the new grid after num entered by player p
                     []   -> do putStrLn "Invalid Move"
                                gameloop' sizes g p
                     [g'] -> gameloop sizes g' (changeturn p)
@@ -100,8 +100,42 @@ possiblemoves size g p
 gametree :: Int -> Playgrid -> Player -> Tree Playgrid
 gametree size g p = Node g [ gametree size g' (changeturn p) | g' <- possiblemoves size g p]           
 
-scorerow :: [Player] -> (Int,Int,Int)
-scorerow row = foldl (\(score,countx,counto) player -> if (player == X ) then (score + (10^(countx+1)),countx+1,0) else if (player == O) then (score - 10^(counto+1),0,counto+1) else (score,0,0)) (0,0,0) (row)
+scorerow :: [Player] -> Int
+scorerow row = getscore(foldl (\(score,countx,counto) player -> if (player == X ) then (score + (10^(countx+1)),countx+1,0) else if (player == O) then (score - 10^(counto+1),0,counto+1) else (score,0,0)) (0,0,0) (row))
 
 findrow :: Int->  Int -> Int
 findrow size x = x `div` size 
+
+getrow :: Int -> Int -> Playgrid -> [Player]
+getrow size x g = g!!(findrow size x)
+
+getscore (x,_,_) = x
+
+findcol :: Int -> Int -> Int
+findcol size x = (x) `mod` size
+
+getcol :: Int -> Int -> Playgrid -> [Player]
+getcol size x g = (transpose g)!!(findcol size x)
+
+scoreLeaddiag :: Int -> Int -> Playgrid -> Int
+scoreLeaddiag size i g = if (i `elem` [0,(size+1)..((size^2) -1)]) then scorerow(findDiag size g) else 0
+
+scoreOtherdiag :: Int -> Int -> Playgrid -> Int
+scoreOtherdiag size i g = if (i `elem` [(size-1),(2*(size-1))..(size * (size-1))]) then scorerow(findDiag size (map reverse g)) else 0
+
+scoregrid :: Int -> Int -> Playgrid -> Int
+scoregrid i size g = scorerow (getrow size i g) + scorerow (getcol size i g) + scoreLeaddiag size i g + scoreOtherdiag size i g
+
+--scoreTree size (g,score,depth) playerturn limit = Node (g,score,depth) [Tree (g',score',depth-1) where g' = (possiblemoves size g playerturn)]
+
+gameStree :: Int -> (Playgrid,Int) -> Player -> Tree (Playgrid,Int)
+gameStree size (g,score) p depth = 
+               | (depth > 0) =  Node (g,score') [ gameStree size (g',scoreFGrid g') (changeturn p) | g' <- possiblemoves size g p ]
+               | (depth = 0) =  Node (g,scoreFGrid g) []--[gameStree size (g',scoreFGrid g') (changeturn p) | g' <- possiblemoves size g p ]
+
+--or try score tree given a gametree 
+--given infor is size,playgrid,playerturn,score at that pt
+
+scoreFGrid :: Playgrid -> Int
+scoreFGrid g = foldl (\acc row -> acc + scorerow row) 0 g
+
