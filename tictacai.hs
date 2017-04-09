@@ -128,14 +128,17 @@ scoregrid i size g = scorerow (getrow size i g) + scorerow (getcol size i g) + s
 
 --scoreTree size (g,score,depth) playerturn limit = Node (g,score,depth) [Tree (g',score',depth-1) where g' = (possiblemoves size g playerturn)]
 
-gameStree :: Int -> (Playgrid,Int) -> Player -> Tree (Playgrid,Int)
-gameStree size (g,score) p depth = 
-               | (depth > 0) =  Node (g,score') [ gameStree size (g',scoreFGrid g') (changeturn p) | g' <- possiblemoves size g p ]
-               | (depth = 0) =  Node (g,scoreFGrid g) []--[gameStree size (g',scoreFGrid g') (changeturn p) | g' <- possiblemoves size g p ]
-
+gameStree :: Int -> (Playgrid,Int) -> Player -> Int-> Tree (Playgrid,Int)
+gameStree size (g,score) p depth  
+               | (depth > 0) =  Node (g,score' size p g) [ gameStree size (g',score' size (changeturn p) g') (changeturn p) (depth-1)| g' <- possiblemoves size g p ]
+               | (depth == 0) =  Node (g,scoreFGrid g) []--[gameStree size (g',scoreFGrid g') (changeturn p) | g' <- possiblemoves size g p ]
+                                     where score' size p g = if p==X then maxlist (map scoreFGrid [g'| g' <- possiblemoves size g p ]) else minlist (map scoreFGrid [g'| g' <- possiblemoves size g p])
 --or try score tree given a gametree 
 --given infor is size,playgrid,playerturn,score at that pt
 
 scoreFGrid :: Playgrid -> Int
 scoreFGrid g = foldl (\acc row -> acc + scorerow row) 0 g
 
+maxlist p = foldl max 0 p
+
+minlist p = foldl min 0 p

@@ -87,6 +87,16 @@ hoursYouReadBooks hours books
   | otherwise = "Get OUT! Like Seriously!"
   where ratio = (fromIntegral (hours) / fromIntegral(books))
 
+tupl :: [(Int,Int)] -> [(Int,Int)]
+tupl listtup =  [(x,ymaxs) | (x,y) <- listtup ] where ymaxs = ymax listtup
 
+ymax :: [(Int,Int)] -> Int
+ymax listtup = maxlist [y | y <- map getsecond listtup]
+
+maxlist p = foldl max 0 p
+
+getfirst (x,y) = x
+
+getsecond (x,y) = y   
 
 
