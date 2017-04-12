@@ -1,34 +1,37 @@
-row :: Char -> Int -> String
-row _ 0 = []
-row x n = row x (n-1) ++ [x]
+buildRow :: Char -> Int -> String
+buildRow _ 0 = []
+buildRow x n = buildRow x (n-1) ++ [x]
 
-matrix :: Int -> Int -> [String]
-matrix 0 _ = []
-matrix m n = matrix (m-1) n ++ [row '.' n]
+buildMatrix :: Int -> Int -> [String]
+buildMatrix 0 _ = []
+buildMatrix m n = buildMatrix (m-1) n ++ [buildRow '.' n]
 
-start n = matrix n n
+start n = buildMatrix n n
 
 
 
-rowdisplay :: String -> String
-rowdisplay [] = []
-rowdisplay (x:xs) = " " ++ [x] ++ rowdisplay xs
+showRow :: String -> String
+showRow [] = []
+showRow (x:xs) = " " ++ [x] ++ showRow xs
 
-display :: [String] -> String
-display [] = []
-display (x:xs) = rowdisplay x ++ "\n" ++ display xs
+showMatrix :: [String] -> String
+showMatrix [] = []
+showMatrix (xs:xss) = showRow xs ++ "\n" ++ showMatrix xss
 
-d xs = putStr (display xs)
+d xss = putStr (showMatrix xss)
 
 
 
 replace :: [String] -> Int -> Int -> Char -> [String]
-replace xs i j x = let (as, b:bs) = splitAt (i-1) xs
-                       (cs, _:ds) = splitAt (j-1) b
-                   in as ++ [cs ++ [x] ++ ds] ++ bs
+replace xss i j x = let (ass, bs:bss) = splitAt (i-1) xss
+                        (cs, _:ds) = splitAt (j-1) bs
+                    in ass ++ [cs ++ [x] ++ ds] ++ bss
 
 x :: Int -> Int -> [String] -> [String]
-x i j xs = replace xs i j 'x'
+x i j xss = replace xss i j 'x'
 
 o :: Int -> Int -> [String] -> [String]
-o i j xs = replace xs i j 'o'
+o i j xss = replace xss i j 'o'
+
+dot :: Int -> Int -> [String] -> [String]
+dot i j xss = replace xss i j '.'
