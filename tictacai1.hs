@@ -6,7 +6,7 @@ import System.TimeIt
 
 -- Reading a number
 getNum :: String -> IO Int
-getNum prompt = do putStr prompt
+getNum prompt = do putStr prompt 
                    xs <- getLine
                    if xs /= [] && all isDigit xs then
                       return (read xs)
@@ -77,6 +77,7 @@ gameloop' sizes g p
          | wins sizes O g  = putStrLn "Player O is winner!\n"
          | wins sizes X g  = putStrLn "Player X is winner!\n"
          | full g    = putStrLn "GAME DRAW!\n"
+         | (p == X) = gameloop sizes (automoveX g sizes 10) O
          | otherwise =
               do num <- getNum (prompts' p)
                  case move sizes g num p of--generates the new grid after num entered by player p
@@ -97,49 +98,14 @@ possiblemoves size g p
               | otherwise = concat [move size g i p | i <- [0 .. ((size^2)-1)]]
 -- move gives a single playgrid inside a list so to take that playgrid out of the list we need to concat 
 
-gametree :: Int -> Playgrid -> Player -> Tree Playgrid
-gametree size g p = Node g [ gametree size g' (changeturn p) | g' <- possiblemoves size g p]           
-
 scorerow :: [Player] -> Int
 scorerow row = getscore(foldl (\(score,countx,counto) player -> if (player == X ) then (score + (10^(countx+1)),countx+1,0) else if (player == O) then (score - 10^(counto+1),0,counto+1) else (score,0,0)) (0,0,0) (row))
 
-findrow :: Int->  Int -> Int
-findrow size x = x `div` size 
-
-getrow :: Int -> Int -> Playgrid -> [Player]
-getrow size x g = g!!(findrow size x)
-
-getscore (x,_,_) = x
-
-findcol :: Int -> Int -> Int
-findcol size x = (x) `mod` size
-
-getcol :: Int -> Int -> Playgrid -> [Player]
-getcol size x g = (transpose g)!!(findcol size x)
-
-scoreLeaddiag :: Int -> Int -> Playgrid -> Int
-scoreLeaddiag size i g = if (i `elem` [0,(size+1)..((size^2) -1)]) then scorerow(findDiag size g) else 0
-
-scoreOtherdiag :: Int -> Int -> Playgrid -> Int
-scoreOtherdiag size i g = if (i `elem` [(size-1),(2*(size-1))..(size * (size-1))]) then scorerow(findDiag size (map reverse g)) else 0
-
-scoregrid :: Int -> Int -> Playgrid -> Int
-scoregrid i size g = scorerow (getrow size i g) + scorerow (getcol size i g) + scoreLeaddiag size i g + scoreOtherdiag size i g
-
---scoreTree size (g,score,depth) playerturn limit = Node (g,score,depth) [Tree (g',score',depth-1) where g' = (possiblemoves size g playerturn)]
-
-gameStree :: Int -> (Playgrid,Int) -> Player -> Int-> Tree (Playgrid,Int)
-gameStree size (g,score) p depth
-               | wins size X (getfirst (g,score)) =  Node (g,scoreFGrid size g) []
-               | wins size O (getfirst (g,score)) = Node (g,scoreFGrid size g) []
-               | (depth > 0) =  Node (g,score' size p g) [ gameStree size (g',score' size (changeturn p) g') (changeturn p) (depth-1)| g' <- possiblemoves size g p ]
-               | (depth == 0) =  Node (g,scoreFGrid size g) []--[gameStree size (g',scoreFGrid size g') (changeturn p) | g' <- possiblemoves size g p ]
-                                     where score' size p g = if p==X then maxlist (map (scoreFGrid size) [g'| g' <- possiblemoves size g p ]) else minlist (map (scoreFGrid size) [g'| g' <- possiblemoves size g p])
---or try score tree given a gametree 
---given infor is size,playgrid,playerturn,score at that pt
-
 scoreFGrid :: Int -> Playgrid-> Int
-scoreFGrid size g = (scorerowWise g) +  (scorerowWise (transpose g)) + (scorerow(findDiag size g)) + (scorerow(findDiag size (map reverse g)))
+scoreFGrid size g  
+                | wins size X g = 100000000000000000
+                | wins size O g = -100000000000000000 
+                |otherwise = (scorerowWise g) +  (scorerowWise (transpose g)) + (scorerow(findDiag size g)) + (scorerow(findDiag size (map reverse g)))
 
 scorerowWise :: Playgrid -> Int
 scorerowWise g = foldl (\acc row -> acc + scorerow row) 0 g
@@ -178,3 +144,46 @@ getmaxpair l = head [(a,b) | (a,b) <- l ]
 
 isover :: Int -> Playgrid -> Bool
 isover size game = (wins size O game) || (wins size X game)
+---------------------------------------------------------------------------------------------------------------------
+--unused code
+
+
+gametree :: Int -> Playgrid -> Player -> Tree Playgrid
+gametree size g p = Node g [ gametree size g' (changeturn p) | g' <- possiblemoves size g p]           
+
+findrow :: Int->  Int -> Int
+findrow size x = x `div` size 
+
+getrow :: Int -> Int -> Playgrid -> [Player]
+getrow size x g = g!!(findrow size x)
+
+getscore (x,_,_) = x
+
+findcol :: Int -> Int -> Int
+findcol size x = (x) `mod` size
+
+getcol :: Int -> Int -> Playgrid -> [Player]
+getcol size x g = (transpose g)!!(findcol size x)
+
+
+
+scoreLeaddiag :: Int -> Int -> Playgrid -> Int
+scoreLeaddiag size i g = if (i `elem` [0,(size+1)..((size^2) -1)]) then scorerow(findDiag size g) else 0
+
+scoreOtherdiag :: Int -> Int -> Playgrid -> Int
+scoreOtherdiag size i g = if (i `elem` [(size-1),(2*(size-1))..(size * (size-1))]) then scorerow(findDiag size (map reverse g)) else 0
+
+scoregrid :: Int -> Int -> Playgrid -> Int
+scoregrid i size g = scorerow (getrow size i g) + scorerow (getcol size i g) + scoreLeaddiag size i g + scoreOtherdiag size i g
+
+--scoreTree size (g,score,depth) playerturn limit = Node (g,score,depth) [Tree (g',score',depth-1) where g' = (possiblemoves size g playerturn)]
+
+gameStree :: Int -> (Playgrid,Int) -> Player -> Int-> Tree (Playgrid,Int)
+gameStree size (g,score) p depth
+               | wins size X (getfirst (g,score)) =  Node (g,scoreFGrid size g) []
+               | wins size O (getfirst (g,score)) = Node (g,scoreFGrid size g) []
+               | (depth > 0) =  Node (g,score' size p g) [ gameStree size (g',score' size (changeturn p) g') (changeturn p) (depth-1)| g' <- possiblemoves size g p ]
+               | (depth == 0) =  Node (g,scoreFGrid size g) []--[gameStree size (g',scoreFGrid size g') (changeturn p) | g' <- possiblemoves size g p ]
+                                     where score' size p g = if p==X then maxlist (map (scoreFGrid size) [g'| g' <- possiblemoves size g p ]) else minlist (map (scoreFGrid size) [g'| g' <- possiblemoves size g p])
+--or try score tree given a gametree 
+--given infor is size,playgrid,playerturn,score at that pt
