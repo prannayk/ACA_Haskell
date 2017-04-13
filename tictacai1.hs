@@ -141,14 +141,40 @@ gameStree size (g,score) p depth
 scoreFGrid :: Int -> Playgrid-> Int
 scoreFGrid size g = (scorerowWise g) +  (scorerowWise (transpose g)) + (scorerow(findDiag size g)) + (scorerow(findDiag size (map reverse g)))
 
+scorerowWise :: Playgrid -> Int
 scorerowWise g = foldl (\acc row -> acc + scorerow row) 0 g
 
+maxlist :: Num a => Ord a => [a] -> a
 maxlist p = foldl max 0 p
 
+minlist :: Num a =>  Ord a => [a] -> a
 minlist p = foldl min 0 p
 
 getfirst :: (a,b) -> a
 getfirst (x,y) = x
 
+getsecond :: (a,b) -> b
 getsecond (x,y) = y   
 
+--without using trees
+gameMtree :: Int-> Player -> Int-> Playgrid-> (Playgrid,Int)--can be easily edited to add playerturn ton the tuple if required by future functions
+gameMtree size p depth game  
+               | (not (isover size game)) && (depth > 0) =  if (p == X) then (game, maxlist $ map getsecond $ map (gameMtree size (changeturn p) (depth-1)) [g'| g' <- possiblemoves size game p ])  else (game, minlist $ map getsecond $ map (gameMtree size (changeturn p) (depth-1)) [g'| g' <- possiblemoves size game p ])   --Node (g,score' size p g) [ gameStree size (g',score' size (changeturn p) g') (changeturn p) (depth-1)| g' <- possiblemoves size g p ]
+               | (isover size game) || (depth == 0) = (game, scoreFGrid size game) --Node (g,scoreFGrid g) []--[gameStree size (g',scoreFGrid g') (changeturn p) | g' <- possiblemoves size g p ]
+ 
+
+--move selector
+automoveX :: Playgrid -> Int -> Int -> Playgrid
+automoveX g size depth  = getfirst $ getmaxpair $ map (gameMtree size O (depth)) [g'| g' <- possiblemoves size g X ]
+ 
+--have to create isover function
+--need to check if we can apply getsecond directly over the result of gameMtree i.e. wether Node a [] is same as a.
+--I expect it shouldn't be the same, so make a function that given a Tree data type, gets the node of the tree.
+--create getfirst and getmaxpair
+
+getmaxpair :: Num b => Ord b=> [(a,b)] -> (a,b)
+getmaxpair l = head [(a,b) | (a,b) <- l ] 
+                 where b = maxlist(map getsecond l)
+
+isover :: Int -> Playgrid -> Bool
+isover size game = (wins size O game) || (wins size X game)
