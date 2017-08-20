@@ -1,0 +1,164 @@
+
+import Data.List
+printgame state i j n =do
+    if(i<n&&j<n-1)then do
+        if(state!!i!!j==8) then putStr("__ ")
+            else do
+                if(state!!i!!j==3000) then putStr(" X ")
+                    else putStr(" 0 ")
+        printgame state i (j+1) n
+        else do
+            if(j==n-1&&i<n)then do
+                if(state!!i!!j==8) then putStr("__ ")
+                    else do
+                        if(state!!i!!j==3000) then putStr(" X ")
+                            else putStr(" 0 ")
+                putStrLn("")
+                putStrLn("")
+                printgame state (i+1) 0 n
+                else
+                return ()   
+
+diag1list state 0 n =[state!!0!!0]
+diag1list state i n = [state!!i!!i] ++ diag1list state (i-1) n
+diag2list state 0 n = [state!!0!!(n-1)]
+diag2list state i n = [state !!i!!(n-1-i)] ++ diag2list state (i-1) n
+
+
+
+minimax :: [[Int]] -> Int -> Int -> Int -> Int -> IO Int
+minimax state i n bestscore besti= do -- moves are list of all valid moves
+        movesi <- getmovei state n 0 0 []
+        movesj <- getmovej state n 0 0 []
+        let num = length movesj
+        if (i<num) then do
+                let clone = change state (movesi!!i) (movesj!!i) 3001
+                score <- minplay clone 0 n  0 0 -- do a proper call
+                if(score>bestscore) then do
+                    minimax state (i+1) n score i
+                    else minimax state (i+1) n bestscore besti
+            else return besti
+
+
+minplay ::[[Int]] -> Int -> Int -> Int -> Int  -> IO Int
+minplay state i n bestscore besti = do -- moves are list of all valid moves
+        movesi <- getmovei state n 0 0 []
+        movesj <- getmovej state n 0 0 []
+        let num = length movesj
+        if(i==num) then do
+            res <- evaluate state  n 0 0
+            return res
+            else do
+                if (i<num) then do
+                    let clone = change state (movesi!!i) (movesj!!i) (3001)
+                    score <- maxplay clone 0 n 0 0 -- do a proper call
+                    if(score<bestscore) then do
+                        minplay state (i+1) n score besti
+                        else minplay state  (i+1) n bestscore i
+                else return bestscore
+
+
+maxplay ::[[Int]] -> Int -> Int -> Int  -> Int -> IO Int
+maxplay state i n bestscore besti = do -- moves are list of all valid moves
+        movesi <- getmovei state n 0 0 []
+        movesj <- getmovej state n 0 0 []
+        let num = length movesj
+        if(i==num) then do
+            res <- evaluate state n 0 0
+            return res
+            else do
+                if (i<num) then do
+                    let clone = change state (movesi!!i) (movesj!!i) 3001
+                    score <- minplay clone 0 n 0 0-- do a proper call
+                    if(score>bestscore) then do
+                        maxplay state (i+1) n score besti
+                        else maxplay state (i+1) n bestscore i
+                else return bestscore
+change::[[Int]]->Int->Int->Int->[[Int]]
+change state i j val=(take i state)++[(take j (state!!i))++[val]++(drop (j+1) (state!!i))]++(drop (i+1) state)
+
+getmovei :: [[Int]] -> Int -> Int -> Int -> [Int] -> IO [Int]
+getmovei state n i j list=do
+    if(i==n)then return list
+        else do
+            if(j==n-1) then do
+                if(state!!i!!j==8) then getmovei state n (i+1) 0 (list ++ [i])
+                    else getmovei state n (i+1) 0 (list)
+                else do
+                    if(state!!i!!j==8) then getmovei state n (i) (j+1) (list ++ [i])
+                        else getmovei state n (i) (j+1) (list)
+
+getmovej :: [[Int]] -> Int -> Int -> Int -> [Int] -> IO [Int]
+getmovej state n i j list=do
+    if(i==n)then return list
+        else do
+            if(j==n-1) then do
+                if(state!!i!!j==8) then getmovej state n (i+1) 0 (list ++ [j])
+                    else getmovej state n (i+1) 0 (list)
+                else do
+                    if(state!!i!!j==8) then getmovej state n (i) (j+1) (list ++ [j])
+                        else getmovej state n (i) (j+1) (list)
+
+numberofx :: [Int] -> Int -> Int -> Int -> IO Int
+numberofx row i n nx=do
+    if(i<n) then do
+        if (row!!i==3000) then numberofx row (i+1) n (nx+1)
+            else numberofx row (i+1) n nx
+    else
+        return nx
+
+numberof0 :: [Int] -> Int -> Int -> Int -> IO Int
+numberof0 row i n nx=do
+    if(i<n) then do
+        if (row!!i==3001) then numberof0 row (i+1) n (nx+1)
+            else numberof0 row (i+1) n nx
+    else
+        return nx
+
+evaluate :: [[Int]] -> Int -> Int ->Int -> IO Int
+evaluate state n i current = do
+    if (i==n) then do
+            let l1=diag1list state (n-1) n
+            let l2=diag2list state (n-1) n
+            ox <- numberofx l1 0 n 0
+            o0 <- numberof0 l1 0 n 0
+            px <- numberofx l2 0 n 0
+            p0 <- numberof0 l2 0 n 0
+            return (current + (10^o0) + (10^p0) - (10^px) - (10^ox))
+        else do
+            nx <- numberofx (state!!i) 0 n 0
+            n0 <- numberof0 (state!!i) 0 n 0
+            let clone = transpose state
+            mx <- numberofx (clone!!i) 0 n 0
+            m0 <- numberof0 (clone!!i) 0 n 0
+            let result = current + (10^n0) - (10^nx) + (10^m0) - (10^mx)
+            evaluate state n (i+1) result     
+            
+
+
+input state n= do
+    str2 <- getLine
+    let i=read str2::Int
+    str3 <- getLine
+    let j=read str3::Int
+    let clone = change state i j 3000
+    print "Com 's turn"
+    b <- minimax clone 0 n 0 0
+    movesi <- getmovei clone n 0 0 []
+    movesj <- getmovej clone n 0 0 []
+    let clone2 = change clone (movesi!!b) (movesj!!j) 3001
+    printgame clone2 0 0 n
+    input clone2 n
+
+
+
+
+main = do
+    print "please enter dimension of the Grid"
+    str<-getLine
+    let n = read str::Int
+    let state = (replicate n) ((replicate n) 8)
+    printgame state 0 0 n
+    input state n
+    print "OVER"
+
